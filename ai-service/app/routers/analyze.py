@@ -34,4 +34,4 @@ async def analyze_media(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if os.path.exists(tmp_path):
-            os.remove(tmp_path)
+            os.remove(tmp_path) 
