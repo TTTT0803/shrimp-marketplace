@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Test MetaMask Login</title>
+</head>
+<body>
+  <h2>Test liên kết ví MetaMask</h2>
+  <p>Bước 1: Dán JWT token (lấy từ /auth/login) vào đây:</p>
+  <input type="text" id="jwtToken" placeholder="Dán JWT token" style="width:500px" />
+  <br><br>
+  <button onclick="connectWallet()">Connect Wallet & Ký xác thực</button>
+  <pre id="result"></pre>
+
+  <script>
+    async function connectWallet() {
+      const resultEl = document.getElementById('result');
+      const jwtToken = document.getElementById('jwtToken').value;
+
+      if (!window.ethereum) {
+        resultEl.textContent = 'Chưa cài MetaMask trên trình duyệt!';
+        return;
+      }
+      if (!jwtToken) {
+        resultEl.textContent = 'Vui lòng dán JWT token trước!';
+        return;
+      }
+
+      try {
+        // 1. Kết nối ví
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const address = accounts[0];
+
+        // 2. Lấy nonce từ backend
+        const nonceRes = await fetch(`http://localhost:5000/wallet/nonce?address=${address}`);
+        const { nonce } = await nonceRes.json();
+
+        // 3. Yêu cầu MetaMask ký message
+        const message = `Xác thực ví với nonce: ${nonce}`;
+        const signature = await window.ethereum.request({
+          method: 'personal_sign',
+          params: [message, address],
+        });
+
+        // 4. Gửi lên backend verify
+        const verifyRes = await fetch('http://localhost:5000/wallet/verify', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ address, signature }),
+        });
+
+        const data = await verifyRes.json();
+        resultEl.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultEl.textContent = 'Lỗi: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
