@@ -15,5 +15,5 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/wallet', require('./routes/walletRoutes'));
 app.use('/media', require('./routes/mediaRoutes'));
-
+app.use('/lots', require('./routes/lotRoutes'));
 module.exports = app;  
