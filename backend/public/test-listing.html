@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Dang Ban Len Blockchain</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.0/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+  <h2>Test Farmer dang ban len Blockchain</h2>
+  <input type="text" id="jwtToken" placeholder="Dan JWT token" style="width:500px" /><br><br>
+  <input type="number" id="lotId" placeholder="Lot ID" value="1" /><br><br>
+  <button onclick="createListing()">Dang ban len Blockchain</button>
+  <pre id="result"></pre>
+
+  <script>
+    const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+    const ABI = [
+      "function createListing(uint256 lotId, string cid, uint256 quantity, uint256 price) external"
+    ];
+
+    async function createListing() {
+      const resultEl = document.getElementById('result');
+      const jwtToken = document.getElementById('jwtToken').value;
+      const lotId = document.getElementById('lotId').value;
+
+      try {
+        const dataRes = await fetch(`http://localhost:5000/lots/${lotId}/listing-data`, {
+          headers: { 'Authorization': `Bearer ${jwtToken}` }
+        });
+        const listingData = await dataRes.json();
+        if (listingData.error) throw new Error(listingData.error);
+
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+
+        const priceInWei = ethers.parseEther(listingData.price.toString());
+        const tx = await contract.createListing(
+          listingData.lotId,
+          listingData.cid,
+          listingData.quantity,
+          priceInWei
+        );
+
+        resultEl.textContent = "Dang cho xac nhan giao dich...";
+        await tx.wait();
+
+        const confirmRes = await fetch(`http://localhost:5000/lots/${lotId}/confirm-listing`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ transactionHash: tx.hash }),
+        });
+        const confirmData = await confirmRes.json();
+        resultEl.textContent = JSON.stringify(confirmData, null, 2);
+      } catch (err) {
+        resultEl.textContent = "Loi: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
