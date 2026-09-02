@@ -19,6 +19,9 @@ exports.login = async (req, res) => {
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: 'Sai email hoặc mật khẩu' });
   }
+  if (user.is_locked) {
+  return res.status(403).json({ error: 'Tai khoan da bi khoa, vui long lien he Admin' });
+}
   const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
   res.json({ token, role: user.role, full_name: user.full_name });
 };

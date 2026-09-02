@@ -5,7 +5,7 @@ const BlockchainRecord = require('./BlockchainRecord');
 const Order = require('./Order');
 const EscrowTransaction = require('./EscrowTransaction');
 const User = require('./User');
-
+const Review = require('./Review');
 // 1 lo hang co nhieu ban ghi AI (moi lan phan tich), nhung o day ta chi lay 1-1 don gian
 ShrimpLot.hasOne(AiAnalysis, { foreignKey: 'lot_id', as: 'aiAnalysis' });
 AiAnalysis.belongsTo(ShrimpLot, { foreignKey: 'lot_id' });
@@ -24,7 +24,10 @@ EscrowTransaction.belongsTo(Order, { foreignKey: 'order_id' });
 
 Order.belongsTo(User, { foreignKey: 'buyer_id', as: 'buyer' });
 ShrimpLot.belongsTo(User, { foreignKey: 'farmer_id', as: 'farmer' });
+Order.hasOne(Review, { foreignKey: 'order_id', as: 'review' });
+Review.belongsTo(Order, { foreignKey: 'order_id' });
 
+Review.belongsTo(User, { foreignKey: 'buyer_id', as: 'buyer' });
 module.exports = {
   ShrimpLot,
   AiAnalysis,
@@ -33,4 +36,5 @@ module.exports = {
   Order,
   EscrowTransaction,
   User,
+  Review,
 };

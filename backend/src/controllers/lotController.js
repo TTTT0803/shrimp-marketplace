@@ -211,7 +211,7 @@ exports.listLots = async (req, res) => {
       limit = 12,
     } = req.query;
 
-    const where = { status: 'LISTED' };
+    const where = { status: 'LISTED', is_hidden: false };
 
     if (shrimp_type) where.shrimp_type = shrimp_type;
     if (origin) where.origin = origin;

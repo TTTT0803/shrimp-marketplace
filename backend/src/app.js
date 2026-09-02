@@ -14,4 +14,6 @@ app.use('/wallet', require('./routes/walletRoutes'));
 app.use('/media', require('./routes/mediaRoutes'));
 app.use('/lots', require('./routes/lotRoutes'));
 app.use('/orders', require('./routes/orderRoutes'));
+app.use('/reviews', require('./routes/reviewRoutes'));
+app.use('/admin', require('./routes/adminRoutes'));
 module.exports = app;

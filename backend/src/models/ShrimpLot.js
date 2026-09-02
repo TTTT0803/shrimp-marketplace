@@ -17,6 +17,7 @@ const ShrimpLot = sequelize.define('ShrimpLot', {
     type: DataTypes.ENUM('DRAFT', 'AI_ANALYZED', 'LISTED', 'LOCKED', 'SOLD', 'COMPLETED'),
     defaultValue: 'DRAFT',
   },
+  is_hidden: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, { tableName: 'shrimp_lots', timestamps: false });
 
 module.exports = ShrimpLot;

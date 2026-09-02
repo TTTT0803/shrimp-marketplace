@@ -10,6 +10,7 @@ const User = sequelize.define('User', {
   phone: DataTypes.STRING,
   company: DataTypes.STRING,
   country: DataTypes.STRING,
+  is_locked: { type: DataTypes.BOOLEAN, defaultValue: false },
 }, { tableName: 'users', timestamps: false });
 
 module.exports = User;
