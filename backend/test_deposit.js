@@ -5,7 +5,7 @@ const contractJson = require('./src/contracts/ShrimpEscrow.json');
 
 // Private key Account #1 (dong vai Buyer)
 const BUYER_PRIVATE_KEY = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
-const BUYER_JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6IkJVWUVSIiwiaWF0IjoxNzg3MjkxNjA3LCJleHAiOjE3ODc4OTY0MDd9.XbyyY2L3kvKAKghEKShqt2EMRT_XQFZpqBHaXEtCk68";
+const BUYER_JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZSI6IkJVWUVSIiwiaWF0IjoxNzg4MzUwMjIzLCJleHAiOjE3ODg5NTUwMjN9.dDz_RX-6h0J3oiZT_Zcvpd1D4JqwlvloPKXQnwg5jME";
 const LOT_ID = 1;
 
 const RPC_URL = "http://127.0.0.1:8545";

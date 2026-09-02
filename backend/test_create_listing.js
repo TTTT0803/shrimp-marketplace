@@ -4,7 +4,7 @@ const axios = require('axios');
 const contractJson = require('./src/contracts/ShrimpEscrow.json');
 
 const FARMER_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-const JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkZBUk1FUiIsImlhdCI6MTc4NzIxNjc3MywiZXhwIjoxNzg3ODIxNTczfQ.9Idgd7i9_uGZTTyL6-vvbwMb9O7K0HjZzYfIQCDGwxM";
+const JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkZBUk1FUiIsImlhdCI6MTc4ODM1MDE1OSwiZXhwIjoxNzg4OTU0OTU5fQ.NncqAwNswyImKYamgZF8qnzyerBBZA2cKo0-o7_pFQk";
 const LOT_ID = 1;
 
 const RPC_URL = "http://127.0.0.1:8545";
