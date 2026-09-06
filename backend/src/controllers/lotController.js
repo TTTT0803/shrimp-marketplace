@@ -80,7 +80,7 @@ exports.getListingData = async (req, res) => {
       lotId: lot.id,
       cid: ipfs.cid,
       quantity: Math.round(lot.quantity * 100),
-      price: lot.price || 1,
+      price: (Number(lot.price) > 0) ? lot.price : 1,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -125,7 +125,7 @@ exports.getDepositData = async (req, res) => {
 
     res.json({
       lotId: lot.id,
-      price: lot.price || 1,
+      price: (Number(lot.price) > 0) ? lot.price : 1,
       quantity: lot.quantity,
       currency: lot.currency || 'ETH',
     });
@@ -142,11 +142,13 @@ exports.confirmDeposit = async (req, res) => {
     const lot = await ShrimpLot.findByPk(lotId);
     if (!lot) return res.status(404).json({ error: 'Khong tim thay lo hang' });
 
+    const finalPrice = (Number(lot.price) > 0) ? lot.price : 1;
+
     const order = await Order.create({
       lot_id: lot.id,
       buyer_id: req.user.id,
       quantity: lot.quantity,
-      total_amount: lot.price || 1,
+      total_amount: finalPrice,
       currency: lot.currency || 'ETH',
       status: 'ESCROW',
     });
@@ -155,40 +157,13 @@ exports.confirmDeposit = async (req, res) => {
       order_id: order.id,
       contract_address: process.env.ESCROW_CONTRACT_ADDRESS,
       tx_lock: transactionHash,
-      escrow_amount: lot.price || 1,
+      escrow_amount: finalPrice,
       network: 'Hardhat Local',
       status: 'LOCKED',
       locked_at: new Date(),
     });
 
     lot.status = 'LOCKED';
-    await lot.save();
-
-    res.json({ success: true, order });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-exports.confirmReceivedOrder = async (req, res) => {
-  try {
-    const { orderId } = req.params;
-    const { transactionHash } = req.body;
-
-    const order = await Order.findByPk(orderId);
-    if (!order) return res.status(404).json({ error: 'Khong tim thay don hang' });
-
-    order.status = 'COMPLETED';
-    await order.save();
-
-    const escrowTx = await EscrowTransaction.findOne({ where: { order_id: orderId } });
-    escrowTx.tx_release = transactionHash;
-    escrowTx.status = 'RELEASED';
-    escrowTx.released_at = new Date();
-    await escrowTx.save();
-
-    const lot = await ShrimpLot.findByPk(order.lot_id);
-    lot.status = 'COMPLETED';
     await lot.save();
 
     res.json({ success: true, order });
@@ -289,6 +264,56 @@ exports.getLotDetail = async (req, res) => {
         ? `https://gateway.pinata.cloud/ipfs/${lot.ipfsMetadata.cid}`
         : null,
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getMyLots = async (req, res) => {
+  try {
+    const lots = await ShrimpLot.findAll({
+      where: { farmer_id: req.user.id },
+      order: [['created_at', 'DESC']],
+    });
+    res.json({ data: lots });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.confirmReceivedOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { transactionHash } = req.body;
+
+    const order = await Order.findByPk(orderId);
+    if (!order) return res.status(404).json({ error: 'Khong tim thay don hang' });
+
+    order.status = 'COMPLETED';
+    await order.save();
+
+    const escrowTx = await EscrowTransaction.findOne({ where: { order_id: orderId } });
+    escrowTx.tx_release = transactionHash;
+    escrowTx.status = 'RELEASED';
+    escrowTx.released_at = new Date();
+    await escrowTx.save();
+
+    const lot = await ShrimpLot.findByPk(order.lot_id);
+    lot.status = 'COMPLETED';
+    await lot.save();
+
+    res.json({ success: true, order });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+exports.getMyLots = async (req, res) => {
+  try {
+    const lots = await ShrimpLot.findAll({
+      where: { farmer_id: req.user.id },
+      order: [['created_at', 'DESC']],
+    });
+    res.json({ data: lots });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -1,5 +1,4 @@
-const { Order, ShrimpLot, EscrowTransaction } = require('../models');
-
+const { Order, ShrimpLot, EscrowTransaction, Review } = require('../models');
 exports.getMyOrders = async (req, res) => {
   try {
     const { status } = req.query;
@@ -17,6 +16,10 @@ exports.getMyOrders = async (req, res) => {
         {
           model: EscrowTransaction,
           as: 'escrowTransaction',
+        },
+        {
+          model: Review,
+          as: 'review',
         },
       ],
     });
