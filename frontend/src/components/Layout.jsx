@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Fish, LogOut, User, ShoppingBag, LayoutDashboard } from 'lucide-react';
-
+import {  LogOut, User, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import logo from '../assets/logo.png';
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -16,8 +16,8 @@ export default function Layout() {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-primary-600 font-bold text-xl">
-            <Fish size={28} />
-            Sàn giao dịch Tôm - Sông Thu Bồn, Đà Nẵng
+              <img src={logo} alt="ShrimpMarket" className="w-8 h-8 object-contain" />
+               ShrimpMarket
           </Link>
 
           <nav className="flex items-center gap-4">
